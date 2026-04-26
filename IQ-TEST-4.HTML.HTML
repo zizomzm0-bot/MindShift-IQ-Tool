@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mind Shift | Professional IQ Assessment</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
+    
+    <style>
+        /* 
+           =========================================
+           1. إعدادات التصميم (يمكن للمشتري تعديل الألوان هنا)
+           =========================================
+        */
+        :root {
+            --primary-gold: #c5a059;       /* اللون الذهبي الأساسي */
+            --accent-gold: #e0c38c;        /* ذهبي فاتح للتأثيرات */
+            --bg-dark: #0a0f1a;            /* لون الخلفية الغامق */
+            --card-bg: rgba(15, 23, 42, 0.95); /* لون بطاقة الاختبار */
+            --glass: rgba(255, 255, 255, 0.05);
+            --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* إعدادات الطباعة للشهادة فقط */
+        @media print {
+            body * { visibility: hidden; }
+            #certificate-section, #certificate-section * { visibility: visible; }
+            #certificate-section { position: absolute; left: 0; top: 0; width: 100%; border: none; }
+            .no-print { display: none !important; }
+        }
+
+        /* 
+           =========================================
+           2. التنسيقات العامة (General Styles)
+           =========================================
+        */
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            margin: 0; padding: 0;
+            background: var(--bg-dark);
+            background-image: radial-gradient(circle at center, #1e293b 0%, #0a0f1a 100%);
+            color: #fff;
+            font-family: 'Tajawal', 'Montserrat', sans-serif;
+            min-height: 100vh;
+            display: flex; justify-content: center; align-items: center;
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 95%; max-width: 850px;
+            background: var(--card-bg);
+            padding: 40px; border-radius: 40px;
+            border: 1px solid rgba(197, 160, 89, 0.2);
+            text-align: center;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.6);
+            backdrop-filter: blur(15px);
+            position: relative;
+            z-index: 5;
+        }
+
+        /* 
+           =========================================
+           3. التحكم بالصوت واللغة (Controls)
+           =========================================
+        */
+        .controls-top {
+            position: fixed; top: 25px; left: 25px; right: 25px;
+            display: flex; justify-content: space-between; align-items: center;
+            z-index: 100;
+        }
+
+        .icon-btn {
+            background: var(--glass);
+            border: 1px solid var(--primary-gold);
+            color: var(--primary-gold);
+            padding: 10px 20px; border-radius: 12px;
+            cursor: pointer; font-weight: bold;
+            display: flex; align-items: center; gap: 8px;
+            transition: var(--transition);
+        }
+
+        .icon-btn:hover { background: var(--primary-gold); color: #000; }
+
+        /* 
+           =========================================
+           4. واجهة الأسئلة (Quiz UI)
+           =========================================
+        */
+        .progress-container { width: 100%; height: 6px; background: #1e293b; border-radius: 10px; margin: 25px 0; overflow: hidden; }
+        #progress-bar { height: 100%; background: linear-gradient(to right, var(--primary-gold), var(--accent-gold)); width: 0%; transition: 0.5s; }
+
+        h1 { font-family: 'Montserrat', sans-serif; font-size: 3.5rem; color: var(--primary-gold); margin: 0; }
+        
+        .question-text { font-size: 1.8rem; font-weight: 700; margin: 30px 0; line-height: 1.5; min-height: 80px; }
+
+        .options-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+
+        .option-btn {
+            background: var(--glass);
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 22px; border-radius: 20px;
+            cursor: pointer; color: #fff; font-size: 1.2rem;
+            transition: var(--transition);
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        .option-btn:hover {
+            border-color: var(--primary-gold);
+            background: rgba(197, 160, 89, 0.15);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        /* 
+           =========================================
+           5. الشهادة (Professional Certificate)
+           =========================================
+        */
+        #certificate-section {
+            display: none; background: #fff; color: #000; padding: 60px;
+            border: 20px double var(--primary-gold);
+            background-image: url('https://www.transparenttextures.com/patterns/paper-fibers.png');
+            position: relative; border-radius: 4px; margin-top: 30px;
+        }
+
+        .cert-header { font-family: 'Montserrat', sans-serif; color: var(--primary-gold); font-size: 3rem; margin-bottom: 5px; }
+        .cert-name { font-size: 2.5rem; font-family: 'Times New Roman', serif; border-bottom: 2px solid #333; display: inline-block; padding: 0 50px; margin: 25px 0; }
+        .cert-stamp { 
+            position: absolute; bottom: 40px; right: 50px; width: 130px; height: 130px;
+            border: 5px double var(--primary-gold); border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            color: var(--primary-gold); font-weight: bold; transform: rotate(-15deg);
+            opacity: 0.8; font-size: 0.9rem; text-align: center;
+        }
+
+        /* 
+           =========================================
+           6. التجاوب (Responsiveness)
+           =========================================
+        */
+        @media (max-width: 768px) {
+            .options-grid { grid-template-columns: 1fr; }
+            h1 { font-size: 2.2rem; }
+            .container { padding: 25px; width: 92%; }
+            .question-text { font-size: 1.4rem; }
+            #certificate-section { padding: 30px; border-width: 10px; }
+        }
+
+        .hidden { display: none; }
+        .fade-in { animation: fadeIn 0.6s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    </style>
+</head>
+<body>
+
+    <!-- أدوات التحكم العلوي -->
+    <div class="controls-top">
+        <button class="icon-btn" onclick="toggleLanguage()" id="langSwitcher">
+            <span>English</span>
+        </button>
+        <button class="icon-btn" onclick="toggleMusic()" id="musicBtn">
+            <span id="musicIcon">🔇</span> <span id="musicText">Music Off</span>
+        </button>
+    </div>
+
+    <!-- الخلفية الصوتية -->
+    <audio id="bgMusic" loop>
+        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+    </audio>
+
+    <div class="container fade-in">
+        
+        <!-- صفحة الترحيب -->
+        <div id="start-screen">
+            <h1 style="letter-spacing: 5px;">MIND SHIFT</h1>
+            <p id="tagline" style="color: var(--primary-gold); font-size: 1.2rem; margin-top: 10px;">نظام التقييم المعرفي الأكثر دقة في العالم</p>
+            <div style="margin: 40px 0;">
+                <input type="text" id="userName" 
+                    style="width: 85%; padding: 18px; border-radius: 15px; border: 1px solid #334155; background: #000; color: #fff; text-align: center; font-size: 1.2rem;"
+                    placeholder="أدخل اسمك بالكامل للشهادة">
+            </div>
+            <button class="option-btn" style="background: var(--primary-gold); color: #000; font-weight: 900; width: 220px; margin: 0 auto;" onclick="initQuiz()">
+                بدء الاختبار الآن
+            </button>
+        </div>
+
+        <!-- صفحة الأسئلة -->
+        <div id="quiz-screen" class="hidden">
+            <div class="progress-container"><div id="progress-bar"></div></div>
+            <div style="display: flex; justify-content: space-between; color: var(--primary-gold); font-weight: bold;">
+                <span id="q-counter">Question 1/15</span>
+                <span id="timer-display">05:00</span>
+            </div>
+            <div class="question-text" id="question-text"></div>
+            <div class="options-grid" id="options-box"></div>
+        </div>
+
+        <!-- صفحة النتيجة -->
+        <div id="result-screen" class="hidden">
+            <h2 id="result-title">تحليل القدرات اكتمل</h2>
+            <div id="iq-score" style="font-size: 5rem; color: var(--primary-gold); font-weight: 900; margin: 10px 0;">--</div>
+            <p id="rank-label" style="font-size: 1.5rem; margin-bottom: 30px;"></p>
+            <button class="option-btn" style="background: var(--primary-gold); color: #000; font-weight: 900; width: 280px; margin: 10px auto;" onclick="generateCertificate()">
+                إصدار شهادة معتمدة
+            </button>
+            <button class="icon-btn" style="margin: 20px auto;" onclick="location.reload()">إعادة الاختبار</button>
+        </div>
+
+        <!-- قسم الشهادة -->
+        <div id="certificate-section">
+            <div class="cert-header">CERTIFICATE</div>
+            <p style="font-size: 1.2rem;" id="cert-witness">هذه وثيقة رسمية تؤكد أن:</p>
+            <div class="cert-name" id="display-name">UserName</div>
+            <p id="cert-desc">قد اجتاز بنجاح اختبار الذكاء العالمي (Mind Shift) وحقق درجة ذكاء قدرها:</p>
+            <div id="display-iq" style="font-size: 4rem; color: var(--primary-gold); font-weight: 900;">120</div>
+            <p id="display-date" style="margin-top: 20px; font-weight: bold;"></p>
+            <div class="cert-stamp">MIND SHIFT<br>OFFICIAL SEAL</div>
+            <button class="option-btn no-print" style="background: #000; color: #fff; margin: 20px auto; width: 200px;" onclick="window.print()">
+                حفظ كـ PDF
+            </button>
+        </div>
+
+    </div>
+
+    <script>
+        /* 
+           =========================================
+           7. منطق البرمجة (JavaScript Logic)
+           =========================================
+        */
+
+        // مصفوفة الأسئلة - يمكن للمشتري إضافة أسئلة هنا بسهولة
+        const questions = [
+            { ar: "إذا كان (1=5)، (2=10)، (3=15)، (4=20)، فماذا يساوي 5؟", en: "If 1=5, 2=10, 3=15, 4=20, then 5=?", opts: ["25", "1", "30", "5"], c: 1 },
+            { ar: "ما الرقم الذي يجب أن يحل مكان علامة الاستفهام: 2، 4، 8، 16، ؟", en: "Which number replaces the ?: 2, 4, 8, 16, ?", opts: ["20", "32", "24", "64"], c: 1 },
+            { ar: "المحيط بالنسبة للسمكة كالجو بالنسبة لـ:", en: "Ocean is to fish as atmosphere is to:", opts_ar: ["الطائر", "الإنسان", "الغابة", "الماء"], opts_en: ["Bird", "Human", "Forest", "Water"], c: 0 },
+            { ar: "مضرب وكرة سعرهما 1.10 دولار. المضرب أغلى من الكرة بدولار واحد. كم سعر الكرة؟", en: "A bat and ball cost $1.10. The bat is $1.00 more than the ball. How much is the ball?", opts: ["$0.10", "$0.05", "$0.01", "$0.15"], c: 1 },
+            { ar: "إذا كان خالد أطول من علي، وعلي أقصر من فهد، وفهد أقصر من خالد، من هو الأقصر؟", en: "Khalid > Ali, Ali < Fahd, Fahd < Khalid. Who is the shortest?", opts_ar: ["خالد", "علي", "فهد", "غير معروف"], opts_en: ["Khalid", "Ali", "Fahd", "Unknown"], c: 1 },
+            { ar: "ما هو الحرف الذي يكمل المتسلسلة: A, C, E, G, ?", en: "Next letter in series: A, C, E, G, ?", opts: ["H", "I", "J", "K"], c: 1 },
+            { ar: "كم شهراً في السنة يحتوي على 28 يوماً؟", en: "How many months have 28 days?", opts: ["1", "6", "12", "2"], c: 2 },
+            { ar: "رقم إذا ضربته في نفسه ثم أضفت له 5 أصبح 30؟", en: "Number x itself + 5 = 30?", opts: ["4", "5", "6", "7"], c: 1 },
+            { ar: "ما هو نصف ربع الـ 400؟", en: "What is half of quarter of 400?", opts: ["100", "50", "25", "200"], c: 1 },
+            { ar: "قبل 3 أيام من يوم أمس كان الجمعة، ما هو اليوم؟", en: "3 days before yesterday was Friday. What is today?", opts_ar: ["الثلاثاء", "الأربعاء", "الخميس", "السبت"], opts_en: ["Tuesday", "Wednesday", "Thursday", "Saturday"], c: 0 }
+        ];
+
+        let currentLang = 'ar';
+        let score = 0;
+        let qIdx = 0;
+        let timeLeft = 300;
+        let timer;
+        const music = document.getElementById('bgMusic');
+
+        // تبديل اللغة
+        function toggleLanguage() {
+            currentLang = currentLang === 'ar' ? 'en' : 'ar';
+            document.documentElement.lang = currentLang;
+            document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+            
+            const trans = {
+                ar: { tagline: "نظام التقييم المعرفي الأكثر دقة", namePh: "أدخل اسمك بالكامل للشهادة", startBtn: "بدء الاختبار الآن", musicOn: "الموسيقى تعمل", musicOff: "الموسيقى متوقفة", certTitle: "شهادة كفاءة", rank: "عبقري" },
+                en: { tagline: "The Most Accurate Cognitive System", namePh: "Enter your full name for certificate", startBtn: "Start Assessment Now", musicOn: "Music On", musicOff: "Music Off", certTitle: "CERTIFICATE", rank: "Genius" }
+            };
+
+            document.getElementById('tagline').innerText = trans[currentLang].tagline;
+            document.getElementById('userName').placeholder = trans[currentLang].namePh;
+            document.getElementById('langSwitcher').innerText = currentLang === 'ar' ? 'English' : 'العربية';
+            
+            if(qIdx < questions.length && qIdx > 0) renderQuestion();
+        }
+
+        // نظام الصوت
+        function toggleMusic() {
+            if (music.paused) {
+                music.play();
+                updateMusicUI(true);
+            } else {
+                music.pause();
+                updateMusicUI(false);
+            }
+        }
+
+        function updateMusicUI(on) {
+            document.getElementById('musicIcon').innerText = on ? "🔊" : "🔇";
+            document.getElementById('musicText').innerText = on ? (currentLang === 'ar' ? "الموسيقى تعمل" : "Music On") : (currentLang === 'ar' ? "الموسيقى متوقفة" : "Music Off");
+        }
+
+        // بدء الاختبار
+        function initQuiz() {
+            const name = document.getElementById('userName').value;
+            if (name.length < 3) return alert(currentLang === 'ar' ? "يرجى إدخال اسمك الحقيقي" : "Please enter your real name");
+
+            music.play().then(() => updateMusicUI(true)).catch(() => {});
+            
+            document.getElementById('start-screen').classList.add('hidden');
+            document.getElementById('quiz-screen').classList.remove('hidden');
+            
+            renderQuestion();
+            startTimer();
+        }
+
+        function renderQuestion() {
+            const q = questions[qIdx];
+            document.getElementById('q-counter').innerText = (currentLang === 'ar' ? "سؤال " : "Question ") + (qIdx + 1) + "/" + questions.length;
+            document.getElementById('question-text').innerText = q[currentLang];
+            document.getElementById('progress-bar').style.width = ((qIdx / questions.length) * 100) + "%";
+
+            const optsBox = document.getElementById('options-box');
+            optsBox.innerHTML = "";
+            const currentOpts = q[`opts_${currentLang}`] || q.opts;
+
+            currentOpts.forEach((opt, i) => {
+                const btn = document.createElement('div');
+                btn.className = 'option-btn fade-in';
+                btn.innerText = opt;
+                btn.onclick = () => handleAnswer(i);
+                optsBox.appendChild(btn);
+            });
+        }
+
+        function handleAnswer(idx) {
+            if (idx === questions[qIdx].c) score++;
+            qIdx++;
+            if (qIdx < questions.length) {
+                renderQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function startTimer() {
+            timer = setInterval(() => {
+                timeLeft--;
+                let m = Math.floor(timeLeft / 60);
+                let s = timeLeft % 60;
+                document.getElementById('timer-display').innerText = `${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
+                if (timeLeft <= 0) showResults();
+            }, 1000);
+        }
+
+        function showResults() {
+            clearInterval(timer);
+            document.getElementById('quiz-screen').classList.add('hidden');
+            document.getElementById('result-screen').classList.remove('hidden');
+
+            let iq = 75 + (score * 6.5); // معادلة الـ IQ
+            document.getElementById('iq-score').innerText = Math.round(iq);
+            
+            let ranksAr = ["عبقري", "ذكاء متفوق", "متوسط", "طبيعي"];
+            let ranksEn = ["Genius", "Superior", "Average", "Normal"];
+            let rank = iq > 130 ? 0 : (iq > 115 ? 1 : (iq > 95 ? 2 : 3));
+            
+            document.getElementById('rank-label').innerText = currentLang === 'ar' ? ranksAr[rank] : ranksEn[rank];
+            window.finalData = { name: document.getElementById('userName').value, iq: Math.round(iq), rank: currentLang === 'ar' ? ranksAr[rank] : ranksEn[rank] };
+        }
+
+        function generateCertificate() {
+            document.getElementById('result-screen').classList.add('hidden');
+            document.getElementById('certificate-section').style.display = 'block';
+            document.getElementById('display-name').innerText = window.finalData.name;
+            document.getElementById('display-iq').innerText = window.finalData.iq;
+            document.getElementById('display-date').innerText = new Date().toLocaleDateString(currentLang === 'ar' ? 'ar-EG' : 'en-US');
+            
+            if(currentLang === 'en') {
+                document.getElementById('cert-witness').innerText = "This document confirms that:";
+                document.getElementById('cert-desc').innerText = "Has successfully passed the Mind Shift global IQ test with a score of:";
+            }
+            window.scrollTo(0,0);
+        }
+    </script>
+</body>
+</html>
